@@ -297,11 +297,11 @@ Check 'private: a prompt about passwords looks sensitive' { (Test-Sensitive @('r
 Check 'private: ordinary work does not' { -not (Test-Sensitive @('Run the test suite', 'Edit', 'environment variables', 'how many tokens', 'diagnose the failure') $pq) -and -not (Test-Sensitive (& $keys 'Edit' @{ file_path = 'C:\x\app.ps1' }) $pp) }
 Check 'private: the false alarms of 10-06 stay quiet' {
     -not (Test-Sensitive (& $keys 'Read' @{ file_path = 'C:\Users\x\.claude\projects\m\memory\feedback_secrets_from_1password.md' }) $pp) -and
-    -not (Test-Sensitive (& $keys 'Edit' @{ file_path = 'C:\Users\x\Documents\tok\lib\Privacy.ps1'; old_string = 'password'; new_string = 'secret' }) $pp) -and
+    -not (Test-Sensitive (& $keys 'Edit' @{ file_path = 'C:\Users\x\Documents\projects\tok\lib\Privacy.ps1'; old_string = 'password'; new_string = 'secret' }) $pp) -and
     -not (Test-Sensitive (& $keys 'Write' @{ file_path = 'C:\x\notes.md'; content = 'the api_key and the password and op read' }) $pp) -and
     -not (Test-Sensitive (& $keys 'Bash' @{ command = "python - <<'EOF'`nprint('op read secret .env')`nEOF"; description = 'x' }) $pp)
 }
-Check 'private: only the key argument is kept' { ((& $keys 'Write' @{ file_path = 'C:\x\a.md'; content = 'big body' }) -join '|') -eq 'Write|C:\x\a.md' -and ((& $keys 'Read' @{ file_path = (Join-Path $root 'README.md') }) -join '|') -eq 'Read' -and ((& $keys 'Read' @{ file_path = 'C:\Users\x\Documents\tok\README.md' }) -join '|') -ne 'Read' }
+Check 'private: only the key argument is kept' { ((& $keys 'Write' @{ file_path = 'C:\x\a.md'; content = 'big body' }) -join '|') -eq 'Write|C:\x\a.md' -and ((& $keys 'Read' @{ file_path = (Join-Path $root 'README.md') }) -join '|') -eq 'Read' -and ((& $keys 'Read' @{ file_path = 'C:\Users\x\Documents\projects\tok\README.md' }) -join '|') -ne 'Read' }
 Check 'private: the log gets the pattern, never the text' { (Find-Sensitive @('cat ~/.ssh/id_rsa') $pp) -ceq '(^|[\\/])id_(rsa|ed25519|ecdsa)\b' }
 Check 'private: empty and bad patterns are harmless' { -not (Test-Sensitive @('', $null) $pp) -and -not (Test-Sensitive @('abc') @('([bad')) }
 # 10-10, other people's setups: other password managers, cloud secrets, credential files named in a command, any mail or money connector
@@ -565,7 +565,7 @@ Check 'hops: an adult is the baseline, a hatchling is bouncier, an elder calmer 
 Check 'hops: the needs-you hop never scales' { $e = Get-HopSpec 'elder' $true; $b = Get-HopSpec 'hatchling' $true; $e.Height -eq 22 -and $e.FallMs -eq 440 -and $b.Height -eq 22 }
 Check 'easter egg: Tok fires on its name' { (Test-TokName 'hey Tok, how are you') -and (Test-TokName 'tok.') -and (Test-TokName 'Tok is great') -and (Test-TokName "TOK's tired") }
 Check 'easter egg: Tok does not fire on the file, folder or tokens' {
-    -not (Test-TokName 'edit tok.ps1') -and -not (Test-TokName 'C:\Users\x\Documents\tok\lib') -and -not (Test-TokName 'look in tok/ please') -and
+    -not (Test-TokName 'edit tok.ps1') -and -not (Test-TokName 'C:\Users\x\Documents\projects\tok\lib') -and -not (Test-TokName 'look in tok/ please') -and
     -not (Test-TokName 'tok\design') -and -not (Test-TokName 'run /tok-private') -and -not (Test-TokName 'tools/tok.ps1') -and -not (Test-TokName 'count the tokens') -and -not (Test-TokName 'the tok-say skill')
 }
 Check 'easter egg: thanks, but not ty or thx' { (Test-Thanks 'thanks!') -and (Test-Thanks 'ok thank you') -and -not (Test-Thanks 'ty') -and -not (Test-Thanks 'thx') -and -not (Test-Thanks 'empty typo') }
